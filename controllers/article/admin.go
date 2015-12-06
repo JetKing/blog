@@ -5,7 +5,7 @@ import (
 	// "github.com/astaxie/beego"
 	// "encoding/json"
 	"github.com/duguying/blog/controllers"
-	. "github.com/duguying/blog/models"
+	"github.com/duguying/blog/models"
 	// "github.com/duguying/blog/utils"
 	"github.com/duguying/blog/utils"
 	"github.com/gogather/com"
@@ -25,7 +25,7 @@ func (this *AdminArticleController) ListArticle() {
 		page = 1
 	}
 
-	maps, nextPage, pages, err := ArticleListForAdmin(int(page), 10)
+	maps, nextPage, pages, err := models.TheArticle.ArticleListForAdmin(int(page), 10)
 	if nil != err {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "get list failed", "refer": "/"}
 		this.ServeJson()
@@ -53,7 +53,7 @@ func (this *AdminArticleController) GetArticle() {
 	if nil != err || id < 0 {
 		id = 1
 	}
-	art, err := GetArticle(id)
+	art, err := models.TheArticle.Get(int64(id))
 	if err != nil {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "get list failed", "refer": "/"}
 	} else {
@@ -101,7 +101,7 @@ func (this *AdminArticleController) AddArticle() {
 
 	username := user.(string)
 
-	id, err := AddArticle(title, content, keywords, abstract, username)
+	id, err := models.TheArticle.AddArticle(title, content, keywords, abstract, username)
 	if nil == err {
 		this.Data["json"] = map[string]interface{}{
 			"result": true,
@@ -143,7 +143,7 @@ func (this *AdminArticleController) DelArticle() {
 		id = 0
 	}
 
-	num, err := DeleteArticle(id, "")
+	num, err := models.TheArticle.DeleteArticle(id, "")
 
 	if nil != err {
 		log.Fatal(err)
@@ -188,10 +188,10 @@ func (this *AdminArticleController) UpdateArticle() {
 		this.ServeJson()
 	}
 
-	var art Article
+	var art models.Article
 
 	if nil == err {
-		art, err = GetArticle(int(id))
+		art, err = models.TheArticle.Get(id)
 	} else {
 		this.Ctx.WriteString("not found")
 		return
@@ -201,7 +201,7 @@ func (this *AdminArticleController) UpdateArticle() {
 	art.Content = newContent
 	art.Keywords = newKeywords
 
-	err = UpdateArticle(id, "", art)
+	err = models.TheArticle.UpdateArticle(id, "", art)
 
 	if nil != err {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "update failed", "refer": "/"}
@@ -225,7 +225,7 @@ func (this *AdminProjectController) GetProject() {
 		id = 1
 	}
 
-	project, err := GetProject(id, "")
+	project, err := models.GetProject(id, "")
 	if err != nil {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "get failed", "error": err}
 	} else {
@@ -241,7 +241,7 @@ func (this *AdminProjectController) ListProject() {
 		page = 1
 	}
 
-	maps, nextPageFlag, totalPages, err := ListProjects(int(page), 10)
+	maps, nextPageFlag, totalPages, err := models.ListProjects(int(page), 10)
 
 	if err != nil {
 		this.Data["json"] = map[string]interface{}{

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/duguying/blog/controllers"
-	. "github.com/duguying/blog/models"
+	"github.com/duguying/blog/models"
 	"github.com/duguying/blog/utils"
 	"github.com/gogather/com"
 	"log"
@@ -57,7 +57,7 @@ func (this *XmlrpcController) Post() {
 /////////////////////////////////////////////////////////////////
 
 func login(username string, password string) bool {
-	user, err := FindUser(username)
+	user, err := models.FindUser(username)
 	if err != nil {
 		return false
 	} else {
@@ -105,7 +105,7 @@ func newPost(params interface{}) string {
 			keywords = strings.TrimSuffix(keywords, ",")
 		}
 
-		id, err := AddArticle(title, content, keywords, com.SubString(content, 0, 100), username)
+		id, err := models.TheArticle.AddArticle(title, content, keywords, com.SubString(content, 0, 100), username)
 
 		if err == nil {
 			return fmt.Sprintf(str, id)
@@ -126,7 +126,7 @@ func newCata(params interface{}) string {
 	result := login(username, password)
 
 	name := params.([]interface{})[3].(map[string]interface{})["name"]
-	id, _ := NewTag(name.(string))
+	id, _ := models.NewTag(name.(string))
 
 	if result {
 		str := com.ReadFile("views/rpcxml/response_new_catalog.xml")
@@ -176,7 +176,7 @@ func newMedia(params interface{}) string {
 			return fmt.Sprintf(str, "图片保存到OSS失败")
 		} else {
 			os.Remove("./static/upload/" + name.(string))
-			id, err := AddFile(name.(string), ossFilename, "oss", filetype.(string))
+			id, err := models.AddFile(name.(string), ossFilename, "oss", filetype.(string))
 			if nil != err {
 				log.Println(err)
 				str := com.ReadFile("views/rpcxml/response_failed.xml")
@@ -218,13 +218,13 @@ func editPost(params interface{}) string {
 			return fmt.Sprintf(str, "非法文章ID")
 		}
 
-		var newArt Article
+		var newArt models.Article
 
 		newArt.Title = title
 		newArt.Keywords = keywords
 		newArt.Content = content
 
-		err = UpdateArticle(id, "", newArt)
+		err = models.TheArticle.UpdateArticle(id, "", newArt)
 
 		if err == nil {
 			return com.ReadFile("views/rpcxml/response_edit_post.xml")
@@ -251,7 +251,7 @@ func deletePost(params interface{}) string {
 	}
 
 	if result {
-		_, err := DeleteArticle(id, "")
+		_, err := models.TheArticle.DeleteArticle(id, "")
 		if nil != err {
 			str := com.ReadFile("views/rpcxml/response_failed.xml")
 			return fmt.Sprintf(str, "文章删除失败!")

@@ -1,11 +1,7 @@
 package models
 
 import (
-	//	"errors"
-	"github.com/astaxie/beego/orm"
-	//	"github.com/gogather/com"
-	// "log"
-	//	"regexp"
+	// "github.com/astaxie/beego/orm"
 	"time"
 )
 
@@ -19,17 +15,7 @@ type UserLog struct {
 	CreateTime time.Time
 }
 
-func (this *UserLog) TableName() string {
-	return "user_log"
-}
-
-func init() {
-	orm.RegisterModel(new(UserLog))
-}
-
 func (this *UserLog) AddUserlog(user int64, ip string, ua string, location string, action int) (int64, error) {
-	o := orm.NewOrm()
-	o.Using("default")
 	userLog := new(UserLog)
 	userLog.User = user
 	userLog.Ip = ip
@@ -40,8 +26,6 @@ func (this *UserLog) AddUserlog(user int64, ip string, ua string, location strin
 }
 
 func (this *UserLog) GetUserLogByIp(ip string) (UserLog, error) {
-	o := orm.NewOrm()
-	o.Using("default")
 	userLog := UserLog{Ip: ip}
 	err := o.Read(&userLog, "ip")
 	return userLog, err

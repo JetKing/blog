@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/duguying/blog/controllers"
-	. "github.com/duguying/blog/models"
+	"github.com/duguying/blog/models"
 	"github.com/duguying/blog/utils"
 	"github.com/gogather/com"
 	"os"
@@ -43,13 +43,13 @@ func (this *MainController) Get() {
 		this.Data["is_admin"] = "admin"
 	}
 
-	maps, err := CountByMonth()
+	maps, err := models.TheArticle.CountByMonth()
 
 	if nil == err {
 		this.Data["count_by_month"] = maps
 	}
 
-	maps, nextPageFlag, totalPages, err := ListPage(int(page), 6)
+	maps, nextPageFlag, totalPages, err := models.TheArticle.ListPage(int(page), 6)
 
 	if totalPages < int(page) {
 		page = int64(totalPages)
@@ -70,7 +70,7 @@ func (this *MainController) Get() {
 		this.Data["articles_in_page"] = maps
 	}
 
-	hottest, err := HottestArticleList()
+	hottest, err := models.TheArticle.HottestArticleList()
 
 	if nil == err {
 		this.Data["hottest"] = hottest
@@ -163,7 +163,7 @@ func (this *UploadController) Post() {
 	} else {
 		// 保存到oss成功
 		os.Remove("./static/upload/" + h.Filename)
-		if _, err = AddFile(h.Filename, ossFilename, "oss", mime); nil != err {
+		if _, err = models.AddFile(h.Filename, ossFilename, "oss", mime); nil != err {
 			this.Data["json"] = map[string]interface{}{
 				"result": false,
 				"state":  "save info to database FAILED, " + fmt.Sprint(err),
@@ -197,7 +197,7 @@ func (this *TagController) Get() {
 		page = 1
 	}
 
-	maps, nextPageFlag, totalPages, err := ListByKeyword(tag, int(page), 6)
+	maps, nextPageFlag, totalPages, err := models.TheArticle.ListByKeyword(tag, int(page), 6)
 
 	if totalPages < int(page) {
 		page = totalPages
@@ -218,12 +218,12 @@ func (this *TagController) Get() {
 		this.Data["articles_in_page"] = maps
 	}
 
-	hottest, err := HottestArticleList()
+	hottest, err := models.TheArticle.HottestArticleList()
 
 	if nil == err {
 		this.Data["hottest"] = hottest
 	}
-	monthMaps, err := CountByMonth()
+	monthMaps, err := models.TheArticle.CountByMonth()
 
 	if nil == err {
 		this.Data["count_by_month"] = monthMaps

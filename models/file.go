@@ -17,14 +17,6 @@ type File struct {
 	Mime     string
 }
 
-func (this *File) TableName() string {
-	return "file"
-}
-
-func init() {
-	orm.RegisterModel(new(File))
-}
-
 // 添加文件信息到数据库
 // filename 文件名
 // path 路径
@@ -32,7 +24,6 @@ func init() {
 // mime 文件类型信息
 // error 返回错误
 func AddFile(filename string, path string, store string, mime string) (int64, error) {
-	o := orm.NewOrm()
 	var file File
 	file.Filename = filename
 	file.Path = path
@@ -71,7 +62,6 @@ func RemoveFile(id int) error {
 		return errors.New("id is illeage")
 	}
 
-	o := orm.NewOrm()
 	_, err := o.Delete(&File{Id: id})
 
 	return err

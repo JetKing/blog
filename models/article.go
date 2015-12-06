@@ -11,7 +11,7 @@ import (
 )
 
 type Article struct {
-	Id       int
+	Id       int64
 	Title    string
 	Uri      string
 	Keywords string
@@ -23,19 +23,24 @@ type Article struct {
 	Status   int
 }
 
-func (this *Article) TableName() string {
-	return "article"
-}
+var TheArticle Article
 
-func init() {
-	orm.RegisterModel(new(Article))
+func (this *Article) Get(id int64) (Article, error) {
+	var err error
+	var art Article
+
+	err = utils.GetCache("GetArticle.id."+fmt.Sprintf("%d", id), &art)
+	if err != nil {
+		art = Article{Id: id}
+		err = o.Read(&art, "id")
+		utils.SetCache("GetArticle.id."+fmt.Sprintf("%d", id), art, 600)
+	}
+
+	return art, err
 }
 
 // 添加文章
-func AddArticle(title string, content string, keywords string, abstract string, author string) (int64, error) {
-	o := orm.NewOrm()
-	o.Using("default")
-
+func (this *Article) AddArticle(title string, content string, keywords string, abstract string, author string) (int64, error) {
 	sql := "insert into article(title, uri, keywords, abstract, content, author) values(?, ?, ?, ?, ?, ?)"
 	res, err := o.Raw(sql, title, strings.Replace(title, "/", "-", -1), keywords, abstract, content, author).Exec()
 	if nil != err {
@@ -45,40 +50,21 @@ func AddArticle(title string, content string, keywords string, abstract string, 
 	}
 }
 
-// 通过id获取文章-cached
-func GetArticle(id int) (Article, error) {
-	var err error
-	var art Article
-
-	err = utils.GetCache("GetArticle.id."+fmt.Sprintf("%d", id), &art)
-	if err != nil {
-		o := orm.NewOrm()
-		o.Using("default")
-		art = Article{Id: id}
-		err = o.Read(&art, "id")
-		utils.SetCache("GetArticle.id."+fmt.Sprintf("%d", id), art, 600)
-	}
-
-	return art, err
-}
-
 // 通过uri获取文章-cached
-func GetArticleByUri(uri string) (Article, error) {
+func (this *Article) GetArticleByUri(uri string) (Article, error) {
 	var err error
 	var art Article
 
 	err = utils.GetCache("GetArticleByUri.uri."+uri, &art)
 	if err == nil {
 		// get view count
-		count, err := GetArticleViewCount(art.Id)
+		count, err := this.GetArticleViewCount(art.Id)
 		if err == nil {
 			art.Count = int(count)
 		}
 
 		return art, nil
 	} else {
-		o := orm.NewOrm()
-		o.Using("default")
 		art = Article{Uri: uri}
 		err = o.Read(&art, "uri")
 		utils.SetCache("GetArticleByUri.uri."+uri, art, 600)
@@ -88,22 +74,20 @@ func GetArticleByUri(uri string) (Article, error) {
 }
 
 // 通过文章标题获取文章-cached
-func GetArticleByTitle(title string) (Article, error) {
+func (this *Article) GetArticleByTitle(title string) (Article, error) {
 	var err error
 	var art Article
 
 	err = utils.GetCache("GetArticleByTitle.title."+title, &art)
 	if err != nil {
 		// get view count
-		count, err := GetArticleViewCount(art.Id)
+		count, err := this.GetArticleViewCount(art.Id)
 		if err == nil {
 			art.Count = int(count)
 		}
 
 		return art, nil
 	} else {
-		o := orm.NewOrm()
-		o.Using("default")
 		art = Article{Title: title}
 		err = o.Read(&art, "title")
 		utils.SetCache("GetArticleByTitle.title."+title, art, 600)
@@ -113,11 +97,10 @@ func GetArticleByTitle(title string) (Article, error) {
 }
 
 // 获取文章浏览量
-func GetArticleViewCount(id int) (int, error) {
+func (this *Article) GetArticleViewCount(id int64) (int, error) {
 	var maps []orm.Params
 
 	sql := `select count from article where id=?`
-	o := orm.NewOrm()
 	num, err := o.Raw(sql, id).Values(&maps)
 	if err == nil && num > 0 {
 		count := maps[0]["count"].(string)
@@ -129,9 +112,7 @@ func GetArticleViewCount(id int) (int, error) {
 }
 
 // 更新阅览数统计
-func UpdateCount(id int) error {
-	o := orm.NewOrm()
-	o.Using("default")
+func (this *Article) UpdateCount(id int64) error {
 	art := Article{Id: id}
 	err := o.Read(&art)
 
@@ -143,13 +124,11 @@ func UpdateCount(id int) error {
 }
 
 // 更新文章
-func UpdateArticle(id int64, uri string, newArt Article) error {
-	o := orm.NewOrm()
-	o.Using("default")
+func (this *Article) UpdateArticle(id int64, uri string, newArt Article) error {
 	var art Article
 
 	if 0 != id {
-		art = Article{Id: int(id)}
+		art = Article{Id: id}
 	} else if "" != uri {
 		art = Article{Uri: uri}
 	}
@@ -159,7 +138,7 @@ func UpdateArticle(id int64, uri string, newArt Article) error {
 	art.Abstract = newArt.Abstract
 	art.Content = newArt.Content
 
-	getArt, _ := GetArticle(int(id))
+	getArt, _ := this.Get(id)
 	utils.DelCache("GetArticleByUri.uri." + getArt.Uri)
 	utils.DelCache("GetArticle.id." + fmt.Sprintf("%d", art.Id))
 
@@ -168,18 +147,16 @@ func UpdateArticle(id int64, uri string, newArt Article) error {
 }
 
 // 通过uri删除文章
-func DeleteArticle(id int64, uri string) (int64, error) {
-	o := orm.NewOrm()
-	o.Using("default")
+func (this *Article) DeleteArticle(id int64, uri string) (int64, error) {
 	var art Article
 
 	if 0 != id {
-		art.Id = int(id)
+		art.Id = id
 	} else if "" != uri {
 		art.Uri = uri
 	}
 
-	getArt, _ := GetArticle(int(id))
+	getArt, _ := this.Get(id)
 	utils.DelCache("GetArticleByUri.uri." + getArt.Uri)
 	utils.DelCache("GetArticle.id." + fmt.Sprintf("%d", art.Id))
 
@@ -188,13 +165,13 @@ func DeleteArticle(id int64, uri string) (int64, error) {
 
 // 按月份统计文章数-cached
 // select DATE_FORMAT(time,'%Y年%m月') as date,count(*) as number ,year(time) as year, month(time) as month from article group by date order by year desc, month desc
-func CountByMonth() ([]orm.Params, error) {
+func (this *Article) CountByMonth() ([]orm.Params, error) {
 	var maps []orm.Params
 
 	err := utils.GetCache("CountByMonth", &maps)
 	if nil != err {
 		sql := "select DATE_FORMAT(time,'%Y年%m月') as date,count(*) as number ,year(time) as year, month(time) as month from article group by date order by year desc, month desc"
-		o := orm.NewOrm()
+
 		num, err := o.Raw(sql).Values(&maps)
 		if err == nil && num > 0 {
 			utils.SetCache("CountByMonth", maps, 3600)
@@ -219,7 +196,7 @@ func CountByMonth() ([]orm.Params, error) {
 // bool 是否有下一页
 // int 总页数
 // error 错误
-func ListByMonth(year int, month int, page int, numPerPage int) ([]orm.Params, bool, int, error) {
+func (this *Article) ListByMonth(year int, month int, page int, numPerPage int) ([]orm.Params, bool, int, error) {
 	if year < 0 {
 		year = 1970
 	}
@@ -237,7 +214,7 @@ func ListByMonth(year int, month int, page int, numPerPage int) ([]orm.Params, b
 	}
 
 	var maps, maps2 []orm.Params
-	o := orm.NewOrm()
+
 	var err error
 
 	// get data - cached
@@ -289,12 +266,12 @@ func ListByMonth(year int, month int, page int, numPerPage int) ([]orm.Params, b
 // bool 是否有下一页
 // int 总页数
 // error 错误
-func ListPage(page int, numPerPage int) ([]orm.Params, bool, int, error) {
+func (this *Article) ListPage(page int, numPerPage int) ([]orm.Params, bool, int, error) {
 	// pagePerNum := 6
 	sql1 := "select * from article order by time desc limit ?," + fmt.Sprintf("%d", numPerPage)
 	sql2 := "select count(*) as number from article"
 	var maps, maps2 []orm.Params
-	o := orm.NewOrm()
+
 	num, err := o.Raw(sql1, numPerPage*(page-1)).Values(&maps)
 	if err != nil {
 		fmt.Println("execute sql1 error:")
@@ -344,12 +321,12 @@ func ListPage(page int, numPerPage int) ([]orm.Params, bool, int, error) {
 // []orm.Params 文章
 // bool 是否有下一页
 // error 错误
-func ListByKeyword(keyword string, page int, numPerPage int) ([]orm.Params, bool, int, error) {
+func (this *Article) ListByKeyword(keyword string, page int, numPerPage int) ([]orm.Params, bool, int, error) {
 	// numPerPage := 6
 	sql1 := "select * from article where keywords like ? order by time desc limit ?,?"
 	sql2 := "select count(*) as number from article where keywords like ?"
 	var maps, maps2 []orm.Params
-	o := orm.NewOrm()
+
 	num, err := o.Raw(sql1, fmt.Sprintf("%%%s%%", keyword), numPerPage*(page-1), numPerPage).Values(&maps)
 	o.Raw(sql2, fmt.Sprintf("%%%s%%", keyword)).Values(&maps2)
 
@@ -380,7 +357,7 @@ func ListByKeyword(keyword string, page int, numPerPage int) ([]orm.Params, bool
 
 // 最热文章列表 - cached
 // select * from article order by count desc limit 10
-func HottestArticleList() ([]orm.Params, error) {
+func (this *Article) HottestArticleList() ([]orm.Params, error) {
 	var maps []orm.Params
 
 	// get data - cached
@@ -397,11 +374,11 @@ func HottestArticleList() ([]orm.Params, error) {
 }
 
 // 列出文章 for admin
-func ArticleListForAdmin(page int, numPerPage int) ([]orm.Params, bool, int, error) {
+func (this *Article) ArticleListForAdmin(page int, numPerPage int) ([]orm.Params, bool, int, error) {
 	sql1 := "select id,uri,title,count,time from article order by time desc limit ?," + fmt.Sprintf("%d", numPerPage)
 	sql2 := "select count(*) as number from article"
 	var maps, maps2 []orm.Params
-	o := orm.NewOrm()
+
 	num, err := o.Raw(sql1, numPerPage*(page-1)).Values(&maps)
 	if err != nil {
 		fmt.Println("execute sql1 error:")

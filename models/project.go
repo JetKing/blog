@@ -18,20 +18,9 @@ type Project struct {
 	Time        time.Time
 }
 
-func init() {
-	orm.RegisterModel(new(Project))
-}
-
-func (this *Project) TableName() string {
-	return "project"
-}
-
 // get project by id or name
 func GetProject(id int, name string) (*Project, error) {
 	var err error
-
-	o := orm.NewOrm()
-	o.Using("default")
 
 	pro := Project{}
 
@@ -62,7 +51,7 @@ func ListProjects(page int, numPerPage int) ([]orm.Params, bool, int, error) {
 	sql1 := "select * from project order by time desc limit ?," + fmt.Sprintf("%d", numPerPage)
 	sql2 := "select count(*) as number from project"
 	var maps, maps2 []orm.Params
-	o := orm.NewOrm()
+
 	num, err := o.Raw(sql1, numPerPage*(page-1)).Values(&maps)
 	if err != nil {
 		fmt.Println("execute sql1 error:")
@@ -104,8 +93,6 @@ func ListProjects(page int, numPerPage int) ([]orm.Params, bool, int, error) {
 
 // add project
 func AddProject(name string, icon string, author string, description string, createTime time.Time) (int64, error) {
-	o := orm.NewOrm()
-	o.Using("default")
 	pro := new(Project)
 	pro.Name = name
 	pro.IconUrl = icon
@@ -117,17 +104,12 @@ func AddProject(name string, icon string, author string, description string, cre
 
 // delete project
 func DeleteProject(id int64) error {
-	o := orm.NewOrm()
-	o.Using("default")
 	_, err := o.Delete(&Project{Id: int(id)})
 	return err
 }
 
 // update project
 func UpdateProject(id int64, name string, icon string, description string) error {
-	o := orm.NewOrm()
-	o.Using("default")
-
 	var pro *Project
 	var err error
 

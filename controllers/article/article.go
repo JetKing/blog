@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/duguying/blog/controllers"
-	. "github.com/duguying/blog/models"
+	"github.com/duguying/blog/models"
 	"github.com/gogather/com/log"
 	"strconv"
 )
@@ -41,7 +41,7 @@ func (this *AddArticleController) Post() {
 
 	username := user.(string)
 
-	id, err := AddArticle(title, content, keywords, abstract, username)
+	id, err := models.TheArticle.AddArticle(title, content, keywords, abstract, username)
 	if nil == err {
 		this.Data["json"] = map[string]interface{}{"result": true, "msg": "success added, id " + fmt.Sprintf("[%d] ", id), "refer": nil}
 	} else {
@@ -62,11 +62,11 @@ func (this *ArticleController) Get() {
 
 	log.Blueln("[uri]", uri)
 
-	var art Article
+	var art models.Article
 	if nil == err && id != 0 {
-		art, err = GetArticle(int(id))
+		art, err = models.TheArticle.Get(int64(id))
 	} else if "" != uri {
-		art, err = GetArticleByUri(uri)
+		art, err = models.TheArticle.GetArticleByUri(uri)
 	} else {
 		this.Abort("404")
 		this.TplNames = "error/404.tpl"
@@ -79,12 +79,12 @@ func (this *ArticleController) Get() {
 		return
 	}
 
-	maps, err := CountByMonth()
+	maps, err := models.TheArticle.CountByMonth()
 	if nil == err {
 		this.Data["count_by_month"] = maps
 	}
 
-	hottest, err := HottestArticleList()
+	hottest, err := models.TheArticle.HottestArticleList()
 	if nil == err {
 		this.Data["hottest"] = hottest
 	}
@@ -95,7 +95,7 @@ func (this *ArticleController) Get() {
 	}
 
 	if 0 != art.Id {
-		UpdateCount(art.Id)
+		models.TheArticle.UpdateCount(art.Id)
 	}
 
 	this.Data["id"] = art.Id
@@ -147,12 +147,12 @@ func (this *UpdateArticleController) Post() {
 		this.ServeJson()
 	}
 
-	var art Article
+	var art models.Article
 
 	if nil == err {
-		art, err = GetArticle(int(id))
+		art, err = models.TheArticle.Get(id)
 	} else if "" != uri {
-		art, err = GetArticleByUri(uri)
+		art, err = models.TheArticle.GetArticleByUri(uri)
 	} else {
 		this.Ctx.WriteString("not found")
 	}
@@ -161,7 +161,7 @@ func (this *UpdateArticleController) Post() {
 	art.Content = newContent
 	art.Keywords = newKeywords
 
-	err = UpdateArticle(id, uri, art)
+	err = models.TheArticle.UpdateArticle(id, uri, art)
 
 	if nil != err {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "update failed", "refer": "/"}
@@ -199,7 +199,7 @@ func (this *DeleteArticleController) Post() {
 		id = 0
 	}
 
-	num, err := DeleteArticle(id, title)
+	num, err := models.TheArticle.DeleteArticle(id, title)
 
 	if nil != err {
 		log.Fatal(err)
@@ -226,7 +226,7 @@ func (this *ArticleListPageController) Get() {
 		page = 1
 	}
 
-	maps, nextPageFlag, _, err := ListPage(int(page), 30)
+	maps, nextPageFlag, _, err := models.TheArticle.ListPage(int(page), 30)
 	var prevPageFlag bool
 	if 1 == page {
 		prevPageFlag = false
@@ -278,7 +278,7 @@ func (this *ArchiveController) Get() {
 		page = 1
 	}
 
-	maps, nextPageFlag, pages, err := ListByMonth(year, month, page, 10)
+	maps, nextPageFlag, pages, err := models.TheArticle.ListByMonth(year, month, page, 10)
 
 	if pages < int(page) {
 		page = pages
@@ -299,12 +299,12 @@ func (this *ArchiveController) Get() {
 		this.Data["articles_in_page"] = maps
 	}
 
-	hottest, err := HottestArticleList()
+	hottest, err := models.TheArticle.HottestArticleList()
 
 	if nil == err {
 		this.Data["hottest"] = hottest
 	}
-	monthMaps, err := CountByMonth()
+	monthMaps, err := models.TheArticle.CountByMonth()
 
 	if nil == err {
 		this.Data["count_by_month"] = monthMaps
