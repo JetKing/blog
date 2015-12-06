@@ -23,7 +23,7 @@ func (this *AdminBaseController) Prepare() {
 	} else {
 		// find user id
 		username := user.(string)
-		u, err := models.FindUser(username)
+		u, err := models.TheUsers.FindUser(username)
 		if err != nil {
 			log.Warnln(err)
 		} else {

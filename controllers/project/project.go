@@ -32,7 +32,7 @@ func (this *ProjectListController) PageProjects() {
 		page = 1
 	}
 
-	maps, nextPageFlag, totalPages, err := models.ListProjects(int(page), 10)
+	maps, nextPageFlag, totalPages, err := models.TheProject.ListProjects(int(page), 10)
 
 	if totalPages < int(page) {
 		page = int64(totalPages)
@@ -89,7 +89,7 @@ func (this *ProjectListController) AddProject() {
 
 	author := user.(string)
 
-	id, err := models.AddProject(name, icon, author, description, createTime)
+	id, err := models.TheProject.AddProject(name, icon, author, description, createTime)
 	if err != nil {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "添加失败", "error": err}
 	} else {
@@ -124,7 +124,7 @@ func (this *ProjectListController) DeleteProject() {
 
 	id := int64(params["id"].(float64))
 
-	err = models.DeleteProject(id)
+	err = models.TheProject.DeleteProject(id)
 	if err != nil {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "删除失败", "error": err}
 	} else {
@@ -143,7 +143,7 @@ func (this *ProjectListController) UpdateProject() {
 		return
 	}
 
-//	log.Pinkln(user)
+	//	log.Pinkln(user)
 
 	paramsBody := string(this.Ctx.Input.RequestBody)
 	var params map[string]interface{}
@@ -165,7 +165,7 @@ func (this *ProjectListController) UpdateProject() {
 
 	log.Pinkln(id)
 
-	err = models.UpdateProject(id, name, icon, description)
+	err = models.TheProject.UpdateProject(id, name, icon, description)
 	if err != nil {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "修改失败", "error": err}
 	} else {

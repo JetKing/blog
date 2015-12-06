@@ -57,7 +57,7 @@ func (this *XmlrpcController) Post() {
 /////////////////////////////////////////////////////////////////
 
 func login(username string, password string) bool {
-	user, err := models.FindUser(username)
+	user, err := models.TheUsers.FindUser(username)
 	if err != nil {
 		return false
 	} else {
@@ -126,7 +126,7 @@ func newCata(params interface{}) string {
 	result := login(username, password)
 
 	name := params.([]interface{})[3].(map[string]interface{})["name"]
-	id, _ := models.NewTag(name.(string))
+	id, _ := models.TheTags.NewTag(name.(string))
 
 	if result {
 		str := com.ReadFile("views/rpcxml/response_new_catalog.xml")
@@ -176,7 +176,7 @@ func newMedia(params interface{}) string {
 			return fmt.Sprintf(str, "图片保存到OSS失败")
 		} else {
 			os.Remove("./static/upload/" + name.(string))
-			id, err := models.AddFile(name.(string), ossFilename, "oss", filetype.(string))
+			id, err := models.TheFile.AddFile(name.(string), ossFilename, "oss", filetype.(string))
 			if nil != err {
 				log.Println(err)
 				str := com.ReadFile("views/rpcxml/response_failed.xml")

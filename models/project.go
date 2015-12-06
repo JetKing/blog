@@ -18,8 +18,10 @@ type Project struct {
 	Time        time.Time
 }
 
+var TheProject Project
+
 // get project by id or name
-func GetProject(id int, name string) (*Project, error) {
+func (this *Project) GetProject(id int, name string) (*Project, error) {
 	var err error
 
 	pro := Project{}
@@ -46,7 +48,7 @@ func GetProject(id int, name string) (*Project, error) {
 // bool 是否有下一页
 // int 总页数
 // error 错误
-func ListProjects(page int, numPerPage int) ([]orm.Params, bool, int, error) {
+func (this *Project) ListProjects(page int, numPerPage int) ([]orm.Params, bool, int, error) {
 	// pagePerNum := 6
 	sql1 := "select * from project order by time desc limit ?," + fmt.Sprintf("%d", numPerPage)
 	sql2 := "select count(*) as number from project"
@@ -92,7 +94,7 @@ func ListProjects(page int, numPerPage int) ([]orm.Params, bool, int, error) {
 }
 
 // add project
-func AddProject(name string, icon string, author string, description string, createTime time.Time) (int64, error) {
+func (this *Project) AddProject(name string, icon string, author string, description string, createTime time.Time) (int64, error) {
 	pro := new(Project)
 	pro.Name = name
 	pro.IconUrl = icon
@@ -103,18 +105,18 @@ func AddProject(name string, icon string, author string, description string, cre
 }
 
 // delete project
-func DeleteProject(id int64) error {
+func (this *Project) DeleteProject(id int64) error {
 	_, err := o.Delete(&Project{Id: int(id)})
 	return err
 }
 
 // update project
-func UpdateProject(id int64, name string, icon string, description string) error {
+func (this *Project) UpdateProject(id int64, name string, icon string, description string) error {
 	var pro *Project
 	var err error
 
 	if 0 != id {
-		pro, err = GetProject(int(id), "")
+		pro, err = this.GetProject(int(id), "")
 		if err != nil {
 			return err
 		}

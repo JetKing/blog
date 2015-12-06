@@ -17,13 +17,15 @@ type File struct {
 	Mime     string
 }
 
+var TheFile File
+
 // 添加文件信息到数据库
 // filename 文件名
 // path 路径
 // store 存储类型
 // mime 文件类型信息
 // error 返回错误
-func AddFile(filename string, path string, store string, mime string) (int64, error) {
+func (this *File) AddFile(filename string, path string, store string, mime string) (int64, error) {
 	var file File
 	file.Filename = filename
 	file.Path = path
@@ -57,7 +59,7 @@ func AddFile(filename string, path string, store string, mime string) (int64, er
 
 // 移除文件
 // id 文件id
-func RemoveFile(id int) error {
+func (this *File) RemoveFile(id int) error {
 	if id < 1 {
 		return errors.New("id is illeage")
 	}
@@ -75,12 +77,12 @@ func RemoveFile(id int) error {
 // bool 是否有下一页
 // int 总页数
 // error 错误
-func GetFileList(page int, numPerPage int) ([]orm.Params, bool, int, error) {
+func (this *File) GetFileList(page int, numPerPage int) ([]orm.Params, bool, int, error) {
 	// numPerPage := 6
 	sql1 := "select * from file order by time desc limit ?," + fmt.Sprintf("%d", numPerPage)
 	sql2 := "select count(*) as number from file"
 	var maps, maps2 []orm.Params
-	o := orm.NewOrm()
+
 	num, err := o.Raw(sql1, numPerPage*(page-1)).Values(&maps)
 	o.Raw(sql2).Values(&maps2)
 

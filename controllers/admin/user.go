@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/duguying/blog/controllers"
-	. "github.com/duguying/blog/models"
+	"github.com/duguying/blog/models"
 	"github.com/duguying/blog/utils"
 	"github.com/gogather/com"
 	"time"
@@ -43,7 +43,7 @@ func (this *RegistorController) Post() {
 		return
 	}
 
-	id, err := AddUser(username, password)
+	id, err := models.TheUsers.AddUser(username, password)
 	if nil != err {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "registor failed", "refer": "/"}
 	} else {
@@ -75,7 +75,7 @@ func (this *LoginController) Post() {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "invalid request", "refer": "/"}
 	}
 
-	user, err := FindUser(username)
+	user, err := models.TheUsers.FindUser(username)
 
 	if err != nil {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "user does not exist", "refer": "/"}
@@ -146,7 +146,7 @@ func (this *ChangeUsernameController) Post() {
 	oldUsername := user.(string)
 	newUsername := this.GetString("username")
 
-	err := ChangeUsername(oldUsername, newUsername)
+	err := models.TheUsers.ChangeUsername(oldUsername, newUsername)
 
 	if nil != err {
 		// log.Println(err)
@@ -185,7 +185,7 @@ func (this *SetEmailController) Post() {
 		return
 	}
 
-	err := ChangeEmail(username, email)
+	err := models.TheUsers.ChangeEmail(username, email)
 
 	if nil != err {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "set email failed", "refer": nil}
@@ -227,7 +227,7 @@ func (this *SendEmailToGetBackPasswordController) Get() {
 	time := time.Now()
 	code := com.Md5(com.RandString(20) + time.String())
 
-	err := AddVerify(username, code, time)
+	err := models.TheVarify.AddVerify(username, code, time)
 
 	if nil != err {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "create varify failed", "refer": "/"}
@@ -236,7 +236,7 @@ func (this *SendEmailToGetBackPasswordController) Get() {
 		host := beego.AppConfig.String("host")
 		subject := "blog system get your password back"
 		body := `click the following link to get your password back <font color="red"><a href="` + host + `/password/reset/` + code + `">` + host + `/password/reset/` + code + `</a></font>`
-		currentUser, _ := FindUser(username)
+		currentUser, _ := models.TheUsers.FindUser(username)
 		email := currentUser.Email
 
 		err := utils.SendMail(email, subject, body)
@@ -269,7 +269,7 @@ func (this *SetPasswordController) Get() {
 		this.ServeJson()
 	}
 
-	result, username, err := CheckVarify(varify)
+	result, username, err := models.TheVarify.CheckVarify(varify)
 
 	if nil != err {
 		this.Ctx.WriteString("找回密码已过期")
@@ -306,7 +306,7 @@ func (this *SetPasswordController) Post() {
 		return
 	}
 
-	err := SetPassword(username, newPassword)
+	err := models.TheUsers.SetPassword(username, newPassword)
 	if nil != err {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "set password failed", "refer": nil}
 		this.ServeJson()
@@ -342,7 +342,7 @@ func (this *ChangePasswordController) Post() {
 	oldPassword := this.GetString("old_password")
 	newPassword := this.GetString("password")
 
-	err := ChangePassword(username, oldPassword, newPassword)
+	err := models.TheUsers.ChangePassword(username, oldPassword, newPassword)
 
 	if nil != err {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "change password faild", "refer": nil}

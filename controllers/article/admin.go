@@ -225,7 +225,7 @@ func (this *AdminProjectController) GetProject() {
 		id = 1
 	}
 
-	project, err := models.GetProject(id, "")
+	project, err := models.TheProject.GetProject(id, "")
 	if err != nil {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "get failed", "error": err}
 	} else {
@@ -241,7 +241,7 @@ func (this *AdminProjectController) ListProject() {
 		page = 1
 	}
 
-	maps, nextPageFlag, totalPages, err := models.ListProjects(int(page), 10)
+	maps, nextPageFlag, totalPages, err := models.TheProject.ListProjects(int(page), 10)
 
 	if err != nil {
 		this.Data["json"] = map[string]interface{}{

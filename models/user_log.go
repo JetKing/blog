@@ -15,6 +15,8 @@ type UserLog struct {
 	CreateTime time.Time
 }
 
+var TheUserLog UserLog
+
 func (this *UserLog) AddUserlog(user int64, ip string, ua string, location string, action int) (int64, error) {
 	userLog := new(UserLog)
 	userLog.User = user

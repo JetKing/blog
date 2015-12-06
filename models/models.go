@@ -19,4 +19,5 @@ func registerModel() {
 	orm.RegisterModel(new(Tags))
 	orm.RegisterModel(new(Users))
 	orm.RegisterModel(new(UserLog))
+	orm.RegisterModel(new(Varify))
 }

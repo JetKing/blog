@@ -14,7 +14,9 @@ type Tags struct {
 	Time time.Time
 }
 
-func NewTag(tagName string) (int64, error) {
+var TheTags Tags
+
+func (this *Tags) NewTag(tagName string) (int64, error) {
 	tag := new(Tags)
 	tag.Name = tagName
 	return o.Insert(tag)
