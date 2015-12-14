@@ -1,10 +1,6 @@
 package models
 
 import (
-	// "errors"
-	// "fmt"
-	// "github.com/astaxie/beego/orm"
-	// "strconv"
 	"time"
 )
 

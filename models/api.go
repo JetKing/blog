@@ -9,7 +9,6 @@ import (
 func CountArticle() (int, error) {
 	sql := "select count(*) as number from article"
 	var maps []orm.Params
-	o := orm.NewOrm()
 	o.Raw(sql).Values(&maps)
 
 	return strconv.Atoi(maps[0]["number"].(string))
@@ -19,7 +18,6 @@ func CountArticle() (int, error) {
 func CountUser() (int, error) {
 	sql := "select count(*) as number from users"
 	var maps []orm.Params
-	o := orm.NewOrm()
 	o.Raw(sql).Values(&maps)
 
 	return strconv.Atoi(maps[0]["number"].(string))
