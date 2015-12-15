@@ -101,7 +101,7 @@ func (this *Article) GetArticleByTitle(title string) (Article, error) {
 	var art Article
 
 	err = utils.GetCache("GetArticleByTitle.title."+title, &art)
-	if err != nil {
+	if err == nil {
 		// get view count
 		count, err := this.GetArticleViewCount(art.Id)
 		if err == nil {
@@ -191,7 +191,7 @@ func (this *Article) CountByMonth() ([]orm.Params, error) {
 
 	err := utils.GetCache("CountByMonth", &maps)
 	if nil != err {
-		sql := "select DATE_FORMAT(time,'%Y年%m月') as date,count(*) as number ,year(time) as year, month(time) as month from article where status=1 group by date order by year desc, month desc"
+		sql := "select DATE_FORMAT(time,'%Y年%m月') as date,count(*) as number,year(time) as year, month(time) as month from article where status=1 group by date order by year desc, month desc"
 
 		num, err := o.Raw(sql).Values(&maps)
 		if err == nil && num > 0 {

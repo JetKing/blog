@@ -6,6 +6,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gogather/com"
+	"github.com/gogather/com/log"
 )
 
 func InitSql() {
@@ -21,9 +22,14 @@ func InitSql() {
 	orm.Debug = true
 
 	if com.FileExist("install.lock") {
-		orm.RegisterDataBase("default", "mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8", user, passwd, host, port, dbname))
+		err = orm.RegisterDataBase("default", "mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8", user, passwd, host, port, dbname))
 	} else {
-		orm.RegisterDataBase("default", "mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/?charset=utf8", user, passwd, host, port))
+		err = orm.RegisterDataBase("default", "mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/?charset=utf8", user, passwd, host, port))
+		log.Yellowln("install mode")
+	}
+
+	if err != nil {
+		log.Pinkf("%v\n", err)
 	}
 
 }
