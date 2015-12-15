@@ -10,12 +10,12 @@ import (
 )
 
 type Project struct {
-	Id          int
-	Name        string
-	IconUrl     string
-	Author      string
-	Description string
-	Time        time.Time
+	Id          int       `orm:"pk; auto;"`
+	Name        string    `orm:"not null; varchar(128);"`
+	IconUrl     string    `orm:"not null; varchar(256); default(//duguying.oss-cn-qingdao.aliyuncs.com/image/tools.png);"`
+	Author      string    `orm:"not null; varchar(50);"`
+	Description string    `orm:"not null; text;"`
+	Time        time.Time `orm:"not null; timestamp;"`
 }
 
 var TheProject Project

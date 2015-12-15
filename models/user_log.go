@@ -6,13 +6,13 @@ import (
 )
 
 type UserLog struct {
-	Id         int64
-	User       int64
-	Ip         string
-	Ua         string
-	Location   string
-	Action     int
-	CreateTime time.Time
+	Id         int64     `orm:"pk; auto;"`
+	User       int64     `orm:"not null"`
+	Ip         string    `orm:"varchar(50); null"`
+	Ua         string    `orm:"varchar(128); null"`
+	Location   string    `orm:"varchar(128); null"`
+	Action     int       `orm:"int(8); null"`
+	CreateTime time.Time `orm:"timestamp"`
 }
 
 var TheUserLog UserLog

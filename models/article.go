@@ -11,16 +11,23 @@ import (
 )
 
 type Article struct {
-	Id       int64
-	Title    string
-	Uri      string
-	Keywords string
-	Abstract string
-	Content  string
-	Author   string
-	Time     time.Time
-	Count    int
-	Status   int // 0 草稿 1 发布
+	Id       int64     `orm:"pk; auto;"`
+	Title    string    `orm:"not null; varchar(255)"`
+	Uri      string    `orm:"not null; varchar(255)"`
+	Keywords string    `orm:"varchar(2550)"`
+	Abstract string    `orm:"varchar(255)"`
+	Content  string    `orm:"longtext"`
+	Author   string    `orm:"varchar(255)"`
+	Time     time.Time `orm:"timestamp;"`
+	Count    int       `orm:"int(11)"`
+	Status   int       `orm:"int(4); default(0)"` // 0 草稿 1 发布
+}
+
+func (this *Article) TableUnique() [][]string {
+	return [][]string{
+		[]string{"Title"},
+		[]string{"Uri"},
+	}
 }
 
 var TheArticle Article

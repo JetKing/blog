@@ -9,12 +9,12 @@ import (
 )
 
 type File struct {
-	Id       int
-	Filename string
-	Path     string
-	Time     time.Time
-	Store    string
-	Mime     string
+	Id       int       `orm:"pk; auto;"`
+	Filename string    `orm:"not null; varchar(96)"`
+	Path     string    `orm:"not null; varchar(128)"`
+	Time     time.Time `orm:"not null; timestamp;"`
+	Store    string    `orm:"not null;"`
+	Mime     string    `orm:"null"`
 }
 
 var TheFile File

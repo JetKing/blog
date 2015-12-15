@@ -6,10 +6,10 @@ import (
 )
 
 type Varify struct {
-	Id       int
-	Username string
-	Code     string
-	Overdue  time.Time
+	Id       int       `orm:"pk; auto;"`
+	Username string    `orm:"varchar(50); not null"`
+	Code     string    `orm:"varchar(128)"; not null`
+	Overdue  time.Time `orm:"timestamp;"`
 }
 
 var TheVarify Varify

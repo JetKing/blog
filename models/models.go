@@ -9,7 +9,7 @@ var o orm.Ormer
 func init() {
 	registerModel()
 	o = orm.NewOrm()
-	o.Using("blog")
+	o.Using("blogtest")
 }
 
 func registerModel() {

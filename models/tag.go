@@ -5,9 +5,9 @@ import (
 )
 
 type Tags struct {
-	Id   int
-	Name string
-	Time time.Time
+	Id   int       `orm:"pk; auto;"`
+	Name string    `orm:"not null; varchar(50);"`
+	Time time.Time `orm:"not null; timestamp;"`
 }
 
 var TheTags Tags

@@ -8,11 +8,11 @@ import (
 )
 
 type Users struct {
-	Id       int
-	Username string
-	Password string
-	Salt     string
-	Email    string
+	Id       int    `orm:"pk; auto;"`
+	Username string `orm:"varchar(255); not null"`
+	Password string `orm:"varchar(255); not null"`
+	Salt     string `orm:"varchar(255); not null"`
+	Email    string `orm:"varchar(255);"`
 }
 
 var TheUsers Users
