@@ -7,7 +7,7 @@ import (
 	"github.com/duguying/blog/controllers/xmlrpc"
 )
 
-func init() {
+func InitApiRouter() {
 	beego.Router("/api/get/user", &api.CurrentUserController{})
 	beego.Router("/api/get/total_article_number", &api.TotalArticleNumberController{})
 	beego.Router("/api/get/total_user_number", &api.TotalUserNumberController{})

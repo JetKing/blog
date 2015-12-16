@@ -9,7 +9,7 @@ import (
 	"github.com/duguying/blog/controllers/project"
 )
 
-func init() {
+func InitDefaultRouter() {
 	beego.Router("/", &index.MainController{})
 	beego.Router("/page/:page", &index.MainController{})
 	beego.Router("/tag/:tag/:page", &index.TagController{})

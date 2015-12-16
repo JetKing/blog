@@ -6,10 +6,10 @@ import (
 
 var o orm.Ormer
 
-func init() {
+func InitModels() {
 	registerModel()
 	o = orm.NewOrm()
-	o.Using("blogtest")
+	o.Using("default")
 }
 
 func registerModel() {

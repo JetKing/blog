@@ -5,11 +5,10 @@ import (
 	"github.com/duguying/blog/controllers/admin"
 	"github.com/duguying/blog/controllers/article"
 	"github.com/duguying/blog/controllers/index"
-	"github.com/duguying/blog/controllers/install"
 	"github.com/duguying/blog/controllers/project"
 )
 
-func init() {
+func InitAdminRouter() {
 	beego.Router("/registor", &admin.RegistorController{})
 	beego.Router("/login", &admin.LoginController{})
 	beego.Router("/logout", &admin.LogoutController{})
@@ -30,8 +29,6 @@ func init() {
 	beego.Router("/delete", &article.DeleteArticleController{})
 
 	beego.Router("/upload", &index.UploadController{})
-
-	beego.Router("/install", &install.InstallController{}, "*:Welcome")
 
 	// ng api
 	beego.Router("/api/admin/navlist", &admin.AdminApiController{}, "*:NavList")

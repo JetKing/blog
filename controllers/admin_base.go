@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/duguying/blog/initial"
+	"github.com/duguying/blog/env"
 	"github.com/duguying/blog/models"
 	"github.com/duguying/blog/utils"
 	"github.com/gogather/com"
@@ -17,7 +17,7 @@ type AdminBaseController struct {
 
 // run before get
 func (this *AdminBaseController) Prepare() {
-	if initial.EnvGet("install_mode") == true {
+	if env.EnvGet("install_mode") == true {
 		this.Redirect("/install", 302)
 	}
 	// login status
