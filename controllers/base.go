@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
+	"github.com/duguying/blog/initial"
 	"strings"
 )
 
@@ -27,6 +28,9 @@ func (this *BaseController) Forbbiden(mark string, condition string) {
 
 // run before get
 func (this *BaseController) Prepare() {
+	if initial.EnvGet("install_mode") == true {
+		this.Redirect("/install", 302)
+	}
 	// login status
 	user := this.GetSession("username")
 	if user == nil {
