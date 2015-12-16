@@ -81,12 +81,10 @@ func (this *LoginController) Post() {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "user does not exist", "refer": "/"}
 	} else {
 		passwd := com.Md5(password + user.Salt)
-		// log.Println(password)
-		// log.Println(passwd)
 		if passwd == user.Password {
-
 			this.SetSession("username", username)
-			this.Data["json"] = map[string]interface{}{"result": true, "msg": "user[" + user.Username + "] login success ", "refer": "/admin"}
+			this.Redirect("/admin", 302)
+			return
 		} else {
 			this.Data["json"] = map[string]interface{}{"result": false, "msg": "login failed ", "refer": "/"}
 		}
