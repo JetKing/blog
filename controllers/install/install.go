@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/duguying/blog/controllers/index"
 	"github.com/duguying/blog/env"
 	"github.com/duguying/blog/env/db"
 	"github.com/duguying/blog/models"
@@ -20,10 +21,6 @@ func (this *InstallController) prepare() {
 	if env.EnvGet("install_mode") == false {
 		this.Redirect("/", 302)
 	}
-}
-
-func (this *InstallController) Index() {
-	this.Redirect("/install", 302)
 }
 
 func (this *InstallController) Welcome() {
