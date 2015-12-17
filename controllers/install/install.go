@@ -8,7 +8,7 @@ import (
 	"github.com/duguying/blog/env/db"
 	"github.com/duguying/blog/models"
 	"github.com/duguying/blog/routers"
-	"github.com/gogather/com"
+	// "github.com/gogather/com"
 	"github.com/gogather/com/log"
 )
 
@@ -46,7 +46,7 @@ func (this *InstallController) StartInstall() {
 	verbose := true
 
 	err := db.RegisterDB("default", "mysql", "", user, passwd, host, port)
-	models.InitModels()
+	models.InitModels("default")
 
 	err = this.createMysqlDB(dbname)
 	if err == nil {
@@ -69,6 +69,11 @@ func (this *InstallController) StartInstall() {
 			fmt.Println(err)
 		} else {
 			env.EnvSet("blog_db", "install")
+
+			// re-register models
+			models.ClearModels()
+			models.InitModels("install")
+
 			this.createManager(username, password, email)
 		}
 	}
@@ -91,12 +96,6 @@ func (this *InstallController) createMysqlDB(dbname string) error {
 }
 
 func (this *InstallController) createManager(username, password, email string) error {
-	salt := com.RandString(10)
-	passwd := com.Md5(password + salt)
-
-	o := orm.NewOrm()
-	o.Using("default")
-	p, err := o.Raw("insert into users (`username`, `password`, `salt`, `email`) values (?, ?, ?, ?)").Prepare()
-	_, err = p.Exec(username, passwd, salt, email)
+	_, err := models.TheUsers.AddUser(username, password)
 	return err
 }

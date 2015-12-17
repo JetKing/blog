@@ -6,10 +6,14 @@ import (
 
 var o orm.Ormer
 
-func InitModels() {
+func InitModels(alias string) {
 	registerModel()
 	o = orm.NewOrm()
-	o.Using("default")
+	o.Using(alias)
+}
+
+func ClearModels() {
+	orm.ResetModelCache()
 }
 
 func registerModel() {

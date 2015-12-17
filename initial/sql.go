@@ -29,7 +29,7 @@ func InitSql() {
 		env.EnvSet("blog_db", "default")
 		log.Bluef("[service mode]\n")
 		routers.InitRouter()
-		models.InitModels()
+		models.InitModels("default")
 	}
 }
 
