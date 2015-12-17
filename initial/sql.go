@@ -6,6 +6,7 @@ import (
 	"github.com/duguying/blog/env"
 	"github.com/duguying/blog/env/db"
 	"github.com/duguying/blog/models"
+	"github.com/duguying/blog/routers"
 	"github.com/duguying/blog/routers/install"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gogather/com/log"
@@ -27,7 +28,7 @@ func InitSql() {
 		env.EnvSet("install_mode", false)
 		env.EnvSet("blog_db", "default")
 		log.Bluef("[service mode]\n")
-		InitRouter()
+		routers.InitRouter()
 		models.InitModels()
 	}
 }
