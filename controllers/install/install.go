@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/duguying/blog/controllers/index"
 	"github.com/duguying/blog/env"
 	"github.com/duguying/blog/env/db"
 	"github.com/duguying/blog/models"
 	"github.com/duguying/blog/routers"
+	"github.com/gogather/com"
 	"github.com/gogather/com/log"
 )
 
@@ -38,7 +38,10 @@ func (this *InstallController) StartInstall() {
 	host := this.GetString("host", "127.0.0.1")
 	port := this.GetString("port", "3306")
 
-	// name := "install"
+	username := this.GetString("username", "duguying")
+	password := this.GetString("password", "123456")
+	email := this.GetString("email", "")
+
 	force := false
 	verbose := true
 
@@ -66,6 +69,7 @@ func (this *InstallController) StartInstall() {
 			fmt.Println(err)
 		} else {
 			env.EnvSet("blog_db", "install")
+			this.createManager(username, password, email)
 		}
 	}
 
@@ -83,5 +87,16 @@ func (this *InstallController) createMysqlDB(dbname string) error {
 	o.Using("default")
 	p, err := o.Raw("CREATE DATABASE IF NOT EXISTS `" + dbname + "` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci").Prepare()
 	_, err = p.Exec()
+	return err
+}
+
+func (this *InstallController) createManager(username, password, email string) error {
+	salt := com.RandString(10)
+	passwd := com.Md5(password + salt)
+
+	o := orm.NewOrm()
+	o.Using("default")
+	p, err := o.Raw("insert into users (`username`, `password`, `salt`, `email`) values (?, ?, ?, ?)").Prepare()
+	_, err = p.Exec(username, passwd, salt, email)
 	return err
 }
