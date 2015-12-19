@@ -32,3 +32,6 @@ output
 
 # mac
 .DS_Store
+
+# backup
+*.bak
