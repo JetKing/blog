@@ -3,8 +3,8 @@ package initial
 import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/duguying/blog/env"
-	"github.com/duguying/blog/env/db"
+	"github.com/duguying/blog/modules/env"
+	"github.com/duguying/blog/modules/env/db"
 	"github.com/duguying/blog/models"
 	"github.com/duguying/blog/routers"
 	"github.com/duguying/blog/routers/install"

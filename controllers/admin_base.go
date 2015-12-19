@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/duguying/blog/env"
+	"github.com/duguying/blog/modules/env"
 	"github.com/duguying/blog/models"
 	"github.com/duguying/blog/utils"
 	"github.com/gogather/com"

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/duguying/blog/env"
-	"github.com/duguying/blog/env/db"
+	"github.com/duguying/blog/modules/env"
+	"github.com/duguying/blog/modules/env/db"
 	"github.com/duguying/blog/models"
 	"github.com/duguying/blog/routers"
 	// "github.com/gogather/com"
@@ -25,6 +25,8 @@ func (this *InstallController) prepare() {
 
 func (this *InstallController) Welcome() {
 	this.prepare()
+
+	this.Data["title"] = "安装"
 
 	this.TplNames = "admin/install.tpl"
 }
