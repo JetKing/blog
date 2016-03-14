@@ -82,7 +82,7 @@ func (this *MainController) Get() {
 	this.Data["description"] = "独孤影的博客"
 	this.Data["host"] = beego.AppConfig.String("host")
 
-	this.TplNames = "index.tpl"
+	this.TplName = "index.tpl"
 }
 
 func (this *MainController) Post() {
@@ -95,7 +95,7 @@ type UploadController struct {
 }
 
 func (this *UploadController) Get() {
-	conf := com.ReadFile("conf/ueditor.json")
+	conf, _ := com.ReadFile("conf/ueditor.json")
 	this.Ctx.WriteString(conf)
 }
 
@@ -104,7 +104,7 @@ func (this *UploadController) Post() {
 	user := this.GetSession("username")
 	if user == nil {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "login first please", "refer": nil}
-		this.ServeJson()
+		this.ServeJSON()
 		return
 	}
 
@@ -116,7 +116,7 @@ func (this *UploadController) Post() {
 
 	if nil != err {
 		this.Data["json"] = map[string]interface{}{"result": false, "msg": "upload failed", "refer": nil}
-		this.ServeJson()
+		this.ServeJSON()
 		return
 	}
 
@@ -131,7 +131,7 @@ func (this *UploadController) Post() {
 			"msg":    "upload failed",
 			"refer":  nil,
 		}
-		this.ServeJson()
+		this.ServeJSON()
 		return
 	}
 
@@ -148,7 +148,7 @@ func (this *UploadController) Post() {
 			"msg":    "upload failed",
 			"refer":  nil,
 		}
-		this.ServeJson()
+		this.ServeJSON()
 	}
 
 	if nil != err {
@@ -159,7 +159,7 @@ func (this *UploadController) Post() {
 			"msg":    "upload failed",
 			"refer":  nil,
 		}
-		this.ServeJson()
+		this.ServeJSON()
 		return
 	} else {
 		// 保存到oss成功
@@ -171,7 +171,7 @@ func (this *UploadController) Post() {
 				"msg":    "upload failed",
 				"refer":  nil,
 			}
-			this.ServeJson()
+			this.ServeJSON()
 		}
 	}
 
@@ -181,7 +181,7 @@ func (this *UploadController) Post() {
 		"original": h.Filename,                   //原始文件名
 		"state":    "SUCCESS",
 	}
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // 按关键词列表
@@ -232,7 +232,7 @@ func (this *TagController) Get() {
 
 	this.Data["title"] = "- " + tag
 
-	this.TplNames = "index.tpl"
+	this.TplName = "index.tpl"
 }
 
 func (this *TagController) Post() {
@@ -248,7 +248,7 @@ func (this *StatisticsController) Get() {
 	this.Data["title"] = "数据统计"
 	this.Data["keywords"] = "数据统计"
 	this.Data["description"] = "独孤影的代码数据统计，数据来自于Github.com"
-	this.TplNames = "about/statistics.tpl"
+	this.TplName = "about/statistics.tpl"
 }
 
 // 关于博客
@@ -257,11 +257,11 @@ type AboutBlogController struct {
 }
 
 func (this *AboutBlogController) Get() {
-	this.TplNames = "about/blog.tpl"
+	this.TplName = "about/blog.tpl"
 }
 
 func (this *AboutBlogController) Post() {
-	this.TplNames = "about/blog.tpl"
+	this.TplName = "about/blog.tpl"
 }
 
 // 简历
@@ -274,11 +274,11 @@ func (this *ResumeController) Get() {
 	this.Data["title"] = "个人简历"
 	this.Data["keywords"] = "个人简历"
 	this.Data["description"] = "我正在求职，如果你对我感兴趣欢迎联系我，这儿可以获取我的个人简历"
-	this.TplNames = "about/resume.tpl"
+	this.TplName = "about/resume.tpl"
 }
 
 func (this *ResumeController) Post() {
-	this.TplNames = "about/resume.tpl"
+	this.TplName = "about/resume.tpl"
 }
 
 // Logo
